@@ -1,4 +1,4 @@
-![Terra](http://terralang.org/logo.png)
+<img src="http://terralang.org/logo.png" alt="Terra" style="width: 200px;"/>
 
 ```
 cd ~/.howl/bundles
