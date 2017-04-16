@@ -772,6 +772,84 @@
     "includepath": {
       "description": "# terralib.includepath\n\nThe Lua variable terralib.includepath can be used to add additional paths to the header search. It is a semi-colon separated list of directories to search."
       "signature": "terralib.includepath"
-    }
-  }
+    },
+    "israwlist": {
+      "description": "# terralib.israwlist(l)\n\nReturns true if l is a table that has no keys or has a contiguous range of integer keys from 1 to N for some N, and contains no other keys."
+      "signature": "terralib.israwlist (l)"
+    },
+    "type": {
+      "description": "# terralib.type(o)\n\nExtended version of type(o)."
+      "signature": "terralib.type (o)"
+    },
+    "memoize": {
+      "description": "# terralib.memoize(fun)\n\nMemoize the result of a function. The first time a function is call with a particular set of arguments, it calls the function to calculate the return value and caches it. Subsequent calls with the same arguments (using Lua equality) will return that value. Useful for generating templated values, such as Vector(T) where the same vector type should be returned everytime for the same T."
+      "signature": "terralib.memoize (fun)"
+    },
+    "externfunction": {
+      "description": "# terralib.externfunction(function_name,function_type)\n\nCreate a Terra function bound to an externally defined function. Example:\n\nlocal atoi = terralib.externfunction(\"atoi\",{rawstring} -> {int})"
+      "signature": "terralib.externfunction (function_name,function_type)"
+    },
+    "types": {
+      "istype": {
+        "description": "# terralib.types.istype(t)\n\nTrue if t is a type."
+        "signature": "terralib.types.istype (t)"
+      },
+      "newstruct": {
+        "description": "# terralib.types.newstruct([displayname])\n\nCreate a new user-defined type. displayname is an optional name that will be displayed by error messages, but each call to newstruct creates a unique type regardless of name (We use a nominative type system."
+        "signature": "terralib.types.newstruct ([displayname])"
+      }
+    },
+    "sizeof": {
+      "description": "# terralib.sizeof(terratype)\n\nWrapper around ffi.sizeof. Completes the terratype and returns its size in bytes."
+      "signature": "terralib.sizeof (terratype)"
+    },
+    "offsetof": {
+      "description": "# terralib.offsetof(terratype,field)\n\nWrapper around ffi.offsetof. Completes the terratype and returns the offset in bytes of field inside terratype."
+      "signature": "terralib.offsetof (terratype,field)"
+    },
+    "isquote": {
+      "description": "# terralib.isquote(t)\n\nReturns true if t is a quote."
+      "signature": "terralib.isquote (t)"
+    },
+    "issymbol": {
+      "description": "# terralib.issymbol(s)\n\nTrue if s is a symbol."
+      "signature": "terralib.issymbol (s)"
+    },
+    "typeof": {
+      "description": "# terralib.typeof(obj)\n\nReturn the Terra type of obj. Object must be a LuaJIT ctype that was previously allocated using calls into the Terra API, or as the return value of a Terra function."
+      "signature": "terralib.typeof (obj)"
+    },
+    "new": {
+      "description": "# terralib.new(terratype,[init])\n\nWrapper around LuaJIT’s ffi.new. Allocates a new object with the type terratype. init is an optional initializer that follows the rules for converting between Terra values and Lua values. This object will be garbage collected if it is no longer reachable from Lua."
+      "signature": "terralib.new (terratype,[init])"
+    },
+    "cast": {
+      "description": "# terralib.cast(terratype,obj)\n\nWrapper around ffi.cast. Converts obj to terratype using the rules for converting between Terra values and Lua values."
+      "signature": "terralib.cast (terratype,obj)"
+    },
+    "isconstant": {
+      "description": "# terralib.isconstant(obj)\n\nTrue if obj is a Terra constant."
+      "signature": "terralib.isconstant (obj)"
+    },
+    "ismacro": {
+      "description": "# terralib.ismacro(t)\n\nTrue if t is a macro."
+      "signature": "terralib.ismacro (t)"
+    },
+  },
+  "symbol": {
+    "description": "# symbol(typ,[displayname])\n\nConstruct a new symbol. This symbol will be unique from any other symbol. typ is the type for the symbol. displayname is an optional name that will be printed out in error messages when this symbol is encountered."
+    "signature": "symbol (typ,[displayname])"
+  },
+  "global": {
+    "description": "# global(type,[init,name,isextern])\n#global(init,[name,isextern])\n\nCreates a new global variable of type type given the initial value init. Either type or init must be specified. If type is not specified we attempt to infer it from init. If init is not specified the global is left uninitialized. init is converted to a Terra value using the normal conversion rules. If init is specified, this completes the type.\n\ninit can also be a Quote, which will be treated as a constant expression used to initialized the global. name is used as the debugging name for the global. If isextern is true, then this global is bound to an externally defined variable with the name  name."
+    "signature": "global (type,[init,name,isextern])"
+  },
+  "constant": {
+    "description": "# constant([type],init)\n\nCreate a new constant. init is converted to a Terra value using the normal conversion rules. If the optional type is specified, then init is converted to that type explicitly. Completes the type."
+    "signature": "constant ([type],init)"
+  },
+  "macro": {
+    "description": "# macro(function(arg0,arg1,...,argN) [...] end)\n\nCreate a new macro. The function will be invoked at compile time for each call in Terra code. Each argument will be a Terra quote representing the argument. For instance, the call mymacro(a,b,foo())), will result in three quotes as arguments to the macro. The macro must return a single value that will be converted to a Terra object using the compilation-time conversion rules."
+    "signature": "macro(function(arg0,arg1,...,argN) [...] end)"
+  },
 }
