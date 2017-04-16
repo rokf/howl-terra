@@ -1,8 +1,14 @@
-<img src="http://terralang.org/logo.png" width="200"/>
+<p align="center"><img src="http://terralang.org/logo.png" width="200"/></p>
 
+<h2 align="center">Terra bundle for Howl</h2>
+
+### Installation
 ```
 cd ~/.howl/bundles
 git clone https://github.com/rokf/howl-terra
 ```
 
-For now it only includes syntax highlighting.
+### Includes
+- Syntax highlighting for `Terra-Lua` code
+- `Lua` API for completion and documentation
+- `Terra` API for completion and documentation **WIP**

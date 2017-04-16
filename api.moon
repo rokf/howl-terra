@@ -711,5 +711,67 @@
       "description": "# debug.upvaluejoin (f1, n1, f2, n2)\n\nMake the `n1`-th upvalue of the Lua closure `f1` refer to the `n2`-th\nupvalue of the Lua closure `f2`.",
       "signature": "debug.upvaluejoin (f1, n1, f2, n2)"
     }
+  },
+  "terralib": {
+    "currenttimeinseconds": {
+      "description": "# terralib.currenttimeinseconds()\n\n A Lua function that returns the current time in seconds since some fixed time in the past. Useful for performancing tuning Terra code."
+      "signature": "terralib.currenttimeinseconds ()"
+    },
+    "traceback": {
+      "description": "# terralib.traceback(uctx : &opaque)\n\n A Terra function that can be called from Terra code to print a stack trace. If uctx is nil then this will print the current stack.  uctx can also be a pointer to a ucontext_t object (see ucontext.h) and will print the stack trace for that context. By default, the interpreter will print this information when a program segfaults."
+      "signature": "terralib.traceback (uctx : &opaque)"
+    },
+    "backtrace": {
+      "description": "# terralib.backtrace(addresses : &&opaque, naddr : uint64, ip : &opaque, frameaddress : &opaque)\n\nA low-level interface used to get the return addresses from a machine stack. addresses must be a pointer to a buffer that can hold at least naddr pointers. ip should be the address of the current instruction and will be the first entry in addresses, while  frameaddress should be the value of the base pointer. addresses will be filled with the return addresses on the stack. Requires debugging mode to be enabled (-g) for it to work correctly."
+      "signature": "terralib.backtrace (addresses : &&opaque, naddr : uint64, ip : &opaque, frameaddress : &opaque)"
+    },
+    "disas": {
+      "description": "# terralib.disas(addr : &opaque, nbytes : uint64, ninst : uint64)\n\nA low-level interface to the disassembler. Print the disassembly of instructions starting at addr. Will print nbytes of instructions or ninst instructions, whichever causes more instructions to be printed."
+      "signature": "terralib.disas (addr : &opaque, nbytes : uint64, ninst : uint64)"
+    },
+    "lookupsymbol": {
+      "description": "# terralib.lookupsymbol(ip : &opaque, addr : &&opaque, size : &uint64, name : &rawstring, namelength : &uint64) : bool\n\nAttempts to look up information about a Terra function given a pointer  ip to any instruction in the function. Returns true if successful, filling in addr with the start of the function and size with the size of the function in bytes. Fills in name with a pointer to a fixed-width string of to namemax characters holding the function name."
+      "signature": "terralib.lookupsymbol (ip : &opaque, addr : &&opaque, size : &uint64, name : &rawstring, namelength : &uint64) : bool"
+    },
+    "lookupline": {
+      "description": "# terralib.lookupline(fnaddr : &opaque, ip : &opaque, filename : &rawstring, namelength : &uint64, line : &uint64) : bool\n\nAttempts to look up information about a Terra instruction given a pointer ip to the instruction and a pointer fnaddr to the start of the function containing it. Returns true if successful, filling in line with line on which the instruction occured and  filename with a pointer to a fixed-width string of to namemax characters holding the filename. Fills up to namemax characters of the function’s name into name."
+      "signature": "terralib.lookupline (fnaddr : &opaque, ip : &opaque, filename : &rawstring, namelength : &uint64, line : &uint64) : bool"
+    },
+    "saveobj": {
+      "description": "# terralib.saveobj(filename [, filetype], functiontable[, arguments, target])\n\nSave Terra code to an external representation such as an object file, or executable. filetype can be one of \"object\" (an object file *.o), \"asm\" (an assembly file *.s), \"bitcode\" (LLVM bitcode *.bc), \"llvmir\" (LLVM textual IR *.ll), or \"executable\" (no extension). If filetype is missing then it is inferred from the extension. functiontable is a table from strings to Terra functions. These functions will be included in the code that is written out with the name given in the table. arguments is an additional list that can contain flags passed to the linker when filetype is \"executable\". If filename is nil, then the file will be written in memory and returned as a Lua string.To cross-compile objects for a different architecture, you can specific a target object, which describes the architecture to compile for. Otherwise saveobj will use the native architecture."
+      "signature": "terralib.saveobj (filename [, filetype], functiontable[, arguments, target])"
+    },
+    "load": {
+      "description": "# terralib.load(readerfn)\n\nLua equivalent of C API call terra_load. readerfn behaves the same as in Lua’s load function."
+      "signature": "terralib.load (readerfn)"
+    },
+    "loadstring": {
+      "description": "# terralib.loadstring(s)\n\nLua equivalent of C API call terra_loadstring."
+      "signature": "terralib.loadstring (s)"
+    },
+    "loadfile": {
+      "description": "# terralib.loadfile(filename)\n\nLua equivalent of C API call terra_loadfile."
+      "signature": "terralib.loadfile (filename)"
+    },
+    "includecstring": {
+      "description": "# terralib.includecstring(code,[args,target])\n\nImport the string code as C code. Returns a Lua table mapping the names of included C functions to Terra function objects, and names of included C types (e.g. typedefs) to Terra types. The Lua variable terralib.includepath can be used to add additional paths to the header search. It is a semi-colon separated list of directories to search. args is an optional list of strings that are flags to Clang (e.g. includecstring(code,\"-I\",\"..\")). target is a target object that makes sure the headers are imported correctly for the target desired."
+      "signature": "terralib.includecstring (code,[args,target])"
+    },
+    "includec": {
+      "description": "# terralib.includec(filename,[args,target])\n\nSimilar to includecstring except that C code is loaded from filename. This uses Clangs default path for header files. ... allows you to pass additional arguments to Clang (including more directories to search)."
+      "signature": "terralib.includec (filename,[args,target])"
+    },
+    "linklibrary": {
+      "description": "# terralib.linklibrary(filename)\n\nLoad the dynamic library in file  filename. If header files imported with includec contain declarations whose definitions are not linked into the executable in which Terra is run, then it is necessary to dynamically load the definitions with linklibrary. This situation arises when using external libraries with the terra REPL/driver application."
+      "signature": "terralib.linklibrary (filename)"
+    },
+    "linkllvm": {
+      "description": "# terralib.linkllvm(filename)\n\nLink an LLVM bitcode file filename with extension .bc generated with clang or clang++:\n\nclang++ -O3 -emit-llvm -c mycode.cpp -o mybitcode.bc\n\nThe code is loaded as bitcode rather than machine code. This allows for more aggressive optimization (such as inlining the function calls) but will take longer to initialize in Terra since it must be compiled to machine code. To extract functions from this bitcode file, call the llvmobj:extern method providing the function’s name in the bitcode and its Terra-equivalent type (e.g. int -> int)."
+      "signature": "terralib.linkllvm (filename)"
+    },
+    "includepath": {
+      "description": "# terralib.includepath\n\nThe Lua variable terralib.includepath can be used to add additional paths to the header search. It is a semi-colon separated list of directories to search."
+      "signature": "terralib.includepath"
+    }
   }
 }
