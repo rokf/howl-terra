@@ -848,8 +848,5 @@
     "description": "# constant([type],init)\n\nCreate a new constant. init is converted to a Terra value using the normal conversion rules. If the optional type is specified, then init is converted to that type explicitly. Completes the type."
     "signature": "constant ([type],init)"
   },
-  "macro": {
-    "description": "# macro(function(arg0,arg1,...,argN) [...] end)\n\nCreate a new macro. The function will be invoked at compile time for each call in Terra code. Each argument will be a Terra quote representing the argument. For instance, the call mymacro(a,b,foo())), will result in three quotes as arguments to the macro. The macro must return a single value that will be converted to a Terra object using the compilation-time conversion rules."
-    "signature": "macro(function(arg0,arg1,...,argN) [...] end)"
-  },
+  'macro': { signature: 'macro(function(arg0,arg1,...,argN) [...] end)', description: '# macro(function(arg0,arg1,...,argN) [...] end)\n\nCreate a new macro. The function will be invoked at\ncompile time for each call in Terra code. Each argument\nwill be a Terra quote representing the argument. For instance,\nthe call mymacro(a,b,foo())), will result in three quotes as arguments\nto the macro. The macro must return a single value\nthat will be converted to a Terra object using the\n' },
 }

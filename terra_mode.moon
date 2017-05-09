@@ -1,6 +1,3 @@
-import style from howl.ui
-
-style.define 'longstring', 'string'
 
 class TerraMode
   new: =>
