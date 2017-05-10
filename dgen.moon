@@ -2,6 +2,7 @@
 lgi = require 'lgi'
 lpeg = require 'lpeg'
 serpent = require 'serpent'
+
 import Gtk,Gdk from lgi
 import P,C,Ct,S,V from lpeg
 
@@ -28,6 +29,7 @@ make_lines = (n,data) ->
       txt ..= table.concat(buf," ")
       buf = {}
       txt ..= "\\n"
+  txt ..= table.concat(buf," ")
   txt
 
 generate = Gtk.Button { label: 'Generate' }
@@ -39,6 +41,7 @@ generate.on_clicked = () =>
     word: (P(1) - V'notword')^1
   }
   data = grammar\match(description.buffer.text)
+  print(serpent.block(data,{comment:false}))
   pdata = make_lines(10,data)
   final_txt = "'KEY': { signature: '#{signature.text}', description: '# #{signature.text}\\n\\n#{pdata}' },"
   output.buffer.text = final_txt

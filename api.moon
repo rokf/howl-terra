@@ -713,140 +713,41 @@
     }
   },
   "terralib": {
-    "currenttimeinseconds": {
-      "description": "# terralib.currenttimeinseconds()\n\n A Lua function that returns the current time in seconds since some fixed time in the past. Useful for performancing tuning Terra code."
-      "signature": "terralib.currenttimeinseconds ()"
-    },
-    "traceback": {
-      "description": "# terralib.traceback(uctx : &opaque)\n\n A Terra function that can be called from Terra code to print a stack trace. If uctx is nil then this will print the current stack.  uctx can also be a pointer to a ucontext_t object (see ucontext.h) and will print the stack trace for that context. By default, the interpreter will print this information when a program segfaults."
-      "signature": "terralib.traceback (uctx : &opaque)"
-    },
-    "backtrace": {
-      "description": "# terralib.backtrace(addresses : &&opaque, naddr : uint64, ip : &opaque, frameaddress : &opaque)\n\nA low-level interface used to get the return addresses from a machine stack. addresses must be a pointer to a buffer that can hold at least naddr pointers. ip should be the address of the current instruction and will be the first entry in addresses, while  frameaddress should be the value of the base pointer. addresses will be filled with the return addresses on the stack. Requires debugging mode to be enabled (-g) for it to work correctly."
-      "signature": "terralib.backtrace (addresses : &&opaque, naddr : uint64, ip : &opaque, frameaddress : &opaque)"
-    },
-    "disas": {
-      "description": "# terralib.disas(addr : &opaque, nbytes : uint64, ninst : uint64)\n\nA low-level interface to the disassembler. Print the disassembly of instructions starting at addr. Will print nbytes of instructions or ninst instructions, whichever causes more instructions to be printed."
-      "signature": "terralib.disas (addr : &opaque, nbytes : uint64, ninst : uint64)"
-    },
-    "lookupsymbol": {
-      "description": "# terralib.lookupsymbol(ip : &opaque, addr : &&opaque, size : &uint64, name : &rawstring, namelength : &uint64) : bool\n\nAttempts to look up information about a Terra function given a pointer  ip to any instruction in the function. Returns true if successful, filling in addr with the start of the function and size with the size of the function in bytes. Fills in name with a pointer to a fixed-width string of to namemax characters holding the function name."
-      "signature": "terralib.lookupsymbol (ip : &opaque, addr : &&opaque, size : &uint64, name : &rawstring, namelength : &uint64) : bool"
-    },
-    "lookupline": {
-      "description": "# terralib.lookupline(fnaddr : &opaque, ip : &opaque, filename : &rawstring, namelength : &uint64, line : &uint64) : bool\n\nAttempts to look up information about a Terra instruction given a pointer ip to the instruction and a pointer fnaddr to the start of the function containing it. Returns true if successful, filling in line with line on which the instruction occured and  filename with a pointer to a fixed-width string of to namemax characters holding the filename. Fills up to namemax characters of the function’s name into name."
-      "signature": "terralib.lookupline (fnaddr : &opaque, ip : &opaque, filename : &rawstring, namelength : &uint64, line : &uint64) : bool"
-    },
-    "saveobj": {
-      "description": "# terralib.saveobj(filename [, filetype], functiontable[, arguments, target])\n\nSave Terra code to an external representation such as an object file, or executable. filetype can be one of \"object\" (an object file *.o), \"asm\" (an assembly file *.s), \"bitcode\" (LLVM bitcode *.bc), \"llvmir\" (LLVM textual IR *.ll), or \"executable\" (no extension). If filetype is missing then it is inferred from the extension. functiontable is a table from strings to Terra functions. These functions will be included in the code that is written out with the name given in the table. arguments is an additional list that can contain flags passed to the linker when filetype is \"executable\". If filename is nil, then the file will be written in memory and returned as a Lua string.To cross-compile objects for a different architecture, you can specific a target object, which describes the architecture to compile for. Otherwise saveobj will use the native architecture."
-      "signature": "terralib.saveobj (filename [, filetype], functiontable[, arguments, target])"
-    },
-    "load": {
-      "description": "# terralib.load(readerfn)\n\nLua equivalent of C API call terra_load. readerfn behaves the same as in Lua’s load function."
-      "signature": "terralib.load (readerfn)"
-    },
-    "loadstring": {
-      "description": "# terralib.loadstring(s)\n\nLua equivalent of C API call terra_loadstring."
-      "signature": "terralib.loadstring (s)"
-    },
-    "loadfile": {
-      "description": "# terralib.loadfile(filename)\n\nLua equivalent of C API call terra_loadfile."
-      "signature": "terralib.loadfile (filename)"
-    },
-    "includecstring": {
-      "description": "# terralib.includecstring(code,[args,target])\n\nImport the string code as C code. Returns a Lua table mapping the names of included C functions to Terra function objects, and names of included C types (e.g. typedefs) to Terra types. The Lua variable terralib.includepath can be used to add additional paths to the header search. It is a semi-colon separated list of directories to search. args is an optional list of strings that are flags to Clang (e.g. includecstring(code,\"-I\",\"..\")). target is a target object that makes sure the headers are imported correctly for the target desired."
-      "signature": "terralib.includecstring (code,[args,target])"
-    },
-    "includec": {
-      "description": "# terralib.includec(filename,[args,target])\n\nSimilar to includecstring except that C code is loaded from filename. This uses Clangs default path for header files. ... allows you to pass additional arguments to Clang (including more directories to search)."
-      "signature": "terralib.includec (filename,[args,target])"
-    },
-    "linklibrary": {
-      "description": "# terralib.linklibrary(filename)\n\nLoad the dynamic library in file  filename. If header files imported with includec contain declarations whose definitions are not linked into the executable in which Terra is run, then it is necessary to dynamically load the definitions with linklibrary. This situation arises when using external libraries with the terra REPL/driver application."
-      "signature": "terralib.linklibrary (filename)"
-    },
-    "linkllvm": {
-      "description": "# terralib.linkllvm(filename)\n\nLink an LLVM bitcode file filename with extension .bc generated with clang or clang++:\n\nclang++ -O3 -emit-llvm -c mycode.cpp -o mybitcode.bc\n\nThe code is loaded as bitcode rather than machine code. This allows for more aggressive optimization (such as inlining the function calls) but will take longer to initialize in Terra since it must be compiled to machine code. To extract functions from this bitcode file, call the llvmobj:extern method providing the function’s name in the bitcode and its Terra-equivalent type (e.g. int -> int)."
-      "signature": "terralib.linkllvm (filename)"
-    },
-    "includepath": {
-      "description": "# terralib.includepath\n\nThe Lua variable terralib.includepath can be used to add additional paths to the header search. It is a semi-colon separated list of directories to search."
-      "signature": "terralib.includepath"
-    },
-    "israwlist": {
-      "description": "# terralib.israwlist(l)\n\nReturns true if l is a table that has no keys or has a contiguous range of integer keys from 1 to N for some N, and contains no other keys."
-      "signature": "terralib.israwlist (l)"
-    },
-    "type": {
-      "description": "# terralib.type(o)\n\nExtended version of type(o)."
-      "signature": "terralib.type (o)"
-    },
-    "memoize": {
-      "description": "# terralib.memoize(fun)\n\nMemoize the result of a function. The first time a function is call with a particular set of arguments, it calls the function to calculate the return value and caches it. Subsequent calls with the same arguments (using Lua equality) will return that value. Useful for generating templated values, such as Vector(T) where the same vector type should be returned everytime for the same T."
-      "signature": "terralib.memoize (fun)"
-    },
-    "externfunction": {
-      "description": "# terralib.externfunction(function_name,function_type)\n\nCreate a Terra function bound to an externally defined function. Example:\n\nlocal atoi = terralib.externfunction(\"atoi\",{rawstring} -> {int})"
-      "signature": "terralib.externfunction (function_name,function_type)"
-    },
+    'currenttimeinseconds': { signature: 'terralib.currenttimeinseconds ()', description: '# terralib.currenttimeinseconds ()\n\nA Lua function that returns the current time in seconds\nsince some fixed time in the past. Useful for performancing\ntuning Terra code.' },
+    'traceback': { signature: 'terralib.traceback (uctx : &opaque)', description: '# terralib.traceback (uctx : &opaque)\n\nA Terra function that can be called from Terra code\nto print a stack trace. If uctx is nil then\nthis will print the current stack. uctx can also be\na pointer to a ucontext_t object (see ucontext.h) and will\nprint the stack trace for that context. By default, the\ninterpreter will print this information when a program segfaults.' },
+    'backtrace': { signature: 'terralib.backtrace (addresses : &&opaque, naddr : uint64, ip : &opaque, frameaddress : &opaque)', description: '# terralib.backtrace (addresses : &&opaque, naddr : uint64, ip : &opaque, frameaddress : &opaque)\n\nA low-level interface used to get the return addresses from\na machine stack. addresses must be a pointer to a\nbuffer that can hold at least naddr pointers. ip should\nbe the address of the current instruction and will be\nthe first entry in addresses, while frameaddress should be the\nvalue of the base pointer. addresses will be filled with\nthe return addresses on the stack. Requires debugging mode to\nbe enabled (-g) for it to work correctly.' },
+    'disas': { signature: 'terralib.disas (addr : &opaque, nbytes : uint64, ninst : uint64)', description: '# terralib.disas (addr : &opaque, nbytes : uint64, ninst : uint64)\n\nA low-level interface to the disassembler. Print the disassembly of\ninstructions starting at addr. Will print nbytes of instructions or\nninst instructions, whichever causes more instructions to be printed.' },
+    'lookupsymbol': { signature: 'terralib.lookupsymbol (ip : &opaque, addr : &&opaque, size : &uint64, name : &rawstring, namelength : &uint64) : bool', description: '# terralib.lookupsymbol (ip : &opaque, addr : &&opaque, size : &uint64, name : &rawstring, namelength : &uint64) : bool\n\nAttempts to look up information about a Terra function given\na pointer ip to any instruction in the function. Returns\ntrue if successful, filling in addr with the start of\nthe function and size with the size of the function\nin bytes. Fills in name with a pointer to a\nfixed-width string of to namemax characters holding the function name.\n' },
+    'lookupline': { signature: 'terralib.lookupline (fnaddr : &opaque, ip : &opaque, filename : &rawstring, namelength : &uint64, line : &uint64) : bool', description: '# terralib.lookupline (fnaddr : &opaque, ip : &opaque, filename : &rawstring, namelength : &uint64, line : &uint64) : bool\n\nAttempts to look up information about a Terra instruction given\na pointer ip to the instruction and a pointer fnaddr\nto the start of the function containing it. Returns true\nif successful, filling in line with line on which the\ninstruction occured and filename with a pointer to a fixed-width\nstring of to namemax characters holding the filename. Fills up\nto namemax characters of the function’s name into name.' },
+    'saveobj': { signature: 'terralib.saveobj (filename [, filetype], functiontable[, arguments, target])', description: '# terralib.saveobj (filename [, filetype], functiontable[, arguments, target])\n\nSave Terra code to an external representation such as an\nobject file, or executable. filetype can be one of \"object\"\n(an object file *.o), \"asm\" (an assembly file *.s), \"bitcode\"\n(LLVM bitcode *.bc), \"llvmir\" (LLVM textual IR *.ll), or \"executable\"\n(no extension). If filetype is missing then it is inferred\nfrom the extension. functiontable is a table from strings to\nTerra functions. These functions will be included in the code\nthat is written out with the name given in the\ntable. arguments is an additional list that can contain flags\npassed to the linker when filetype is \"executable\". If filename\nis nil, then the file will be written in memory\nand returned as a Lua string.To cross-compile objects for a\ndifferent architecture, you can specific a target object, which describes\nthe architecture to compile for. Otherwise saveobj will use the\nnative architecture.' },
+    'load': { signature: 'terralib.load (readerfn)', description: '# terralib.load (readerfn)\n\nLua equivalent of C API call terra_load. readerfn behaves the\nsame as in Lua’s load function.' },
+    'loadstring': { signature: 'terralib.loadstring (s)', description: '# terralib.loadstring (s)\n\nLua equivalent of C API call terra_loadstring.' },
+    'loadfile': { signature: 'terralib.loadfile (filename)', description: '# terralib.loadfile (filename)\n\nLua equivalent of C API call terra_loadfile.' },
+    'includecstring': { signature: 'terralib.includecstring (code,[args,target])', description: '# terralib.includecstring (code,[args,target])\n\nImport the string code as C code. Returns a Lua\ntable mapping the names of included C functions to Terra\nfunction objects, and names of included C types (e.g. typedefs)\nto Terra types. The Lua variable terralib.includepath can be used\nto add additional paths to the header search. It is\na semi-colon separated list of directories to search. args is\nan optional list of strings that are flags to Clang\n(e.g. includecstring(code,\"-I\",\"..\")). target is a target object that makes sure\nthe headers are imported correctly for the target desired.' },
+    'includec': { signature: 'terralib.includec (filename,[args,target])', description: '# terralib.includec (filename,[args,target])\n\nSimilar to includecstring except that C code is loaded from\nfilename. This uses Clangs default path for header files. ...\nallows you to pass additional arguments to Clang (including more\ndirectories to search).' },
+    'linklibrary': { signature: 'terralib.linklibrary (filename)', description: '# terralib.linklibrary (filename)\n\nLoad the dynamic library in file filename. If header files\nimported with includec contain declarations whose definitions are not linked\ninto the executable in which Terra is run, then it\nis necessary to dynamically load the definitions with linklibrary. This\nsituation arises when using external libraries with the terra REPL/driver\napplication.' },
+    'linkllvm': { signature: 'terralib.linkllvm (filename)', description: '# terralib.linkllvm (filename)\n\nLink an LLVM bitcode file filename with extension .bc generated\nwith clang or clang++:\n\nclang++ -O3 -emit-llvm -c mycode.cpp -o mybitcode.bc\n\nThe\ncode is loaded as bitcode rather than machine code. This\nallows for more aggressive optimization (such as inlining the function\ncalls) but will take longer to initialize in Terra since\nit must be compiled to machine code. To extract functions\nfrom this bitcode file, call the llvmobj:extern method providing the\nfunction’s name in the bitcode and its Terra-equivalent type (e.g.\nint -> int).' },
+    'includepath': { signature: 'terralib.includepath', description: '# terralib.includepath\n\nThe Lua variable terralib.includepath can be used to add additional\npaths to the header search. It is a semi-colon separated\nlist of directories to search.' },
+    'israwlist': { signature: 'terralib.israwlist (l)', description: '# terralib.israwlist (l)\n\nReturns true if l is a table that has no\nkeys or has a contiguous range of integer keys from\n1 to N for some N, and contains no other\nkeys.' },
+    'type': { signature: 'terralib.type (o)', description: '# terralib.type (o)\n\nExtended version of type(o).' },
+    'memoize': { signature: 'terralib.memoize (fun)', description: '# terralib.memoize (fun)\n\nMemoize the result of a function. The first time a\nfunction is call with a particular set of arguments, it\ncalls the function to calculate the return value and caches\nit. Subsequent calls with the same arguments (using Lua equality)\nwill return that value. Useful for generating templated values, such\nas Vector(T) where the same vector type should be returned\neverytime for the same T.' },
+    'externfunction': { signature: 'terralib.externfunction (function_name,function_type)', description: '# terralib.externfunction (function_name,function_type)\n\nCreate a Terra function bound to an externally defined function.\nExample:\n\nlocal atoi = terralib.externfunction(\"atoi\",{rawstring} -> {int})' },
     "types": {
-      "istype": {
-        "description": "# terralib.types.istype(t)\n\nTrue if t is a type."
-        "signature": "terralib.types.istype (t)"
-      },
-      "newstruct": {
-        "description": "# terralib.types.newstruct([displayname])\n\nCreate a new user-defined type. displayname is an optional name that will be displayed by error messages, but each call to newstruct creates a unique type regardless of name (We use a nominative type system."
-        "signature": "terralib.types.newstruct ([displayname])"
-      }
+      'istype': { signature: 'terralib.types.istype (t)', description: '# terralib.types.istype (t)\n\nTrue if t is a type.' },
+      'newstruct': { signature: 'terralib.types.newstruct ([displayname])', description: '# terralib.types.newstruct ([displayname])\n\nCreate a new user-defined type. displayname is an optional name\nthat will be displayed by error messages, but each call\nto newstruct creates a unique type regardless of name (We\nuse a nominative type system.' },
     },
-    "sizeof": {
-      "description": "# terralib.sizeof(terratype)\n\nWrapper around ffi.sizeof. Completes the terratype and returns its size in bytes."
-      "signature": "terralib.sizeof (terratype)"
-    },
-    "offsetof": {
-      "description": "# terralib.offsetof(terratype,field)\n\nWrapper around ffi.offsetof. Completes the terratype and returns the offset in bytes of field inside terratype."
-      "signature": "terralib.offsetof (terratype,field)"
-    },
-    "isquote": {
-      "description": "# terralib.isquote(t)\n\nReturns true if t is a quote."
-      "signature": "terralib.isquote (t)"
-    },
-    "issymbol": {
-      "description": "# terralib.issymbol(s)\n\nTrue if s is a symbol."
-      "signature": "terralib.issymbol (s)"
-    },
-    "typeof": {
-      "description": "# terralib.typeof(obj)\n\nReturn the Terra type of obj. Object must be a LuaJIT ctype that was previously allocated using calls into the Terra API, or as the return value of a Terra function."
-      "signature": "terralib.typeof (obj)"
-    },
-    "new": {
-      "description": "# terralib.new(terratype,[init])\n\nWrapper around LuaJIT’s ffi.new. Allocates a new object with the type terratype. init is an optional initializer that follows the rules for converting between Terra values and Lua values. This object will be garbage collected if it is no longer reachable from Lua."
-      "signature": "terralib.new (terratype,[init])"
-    },
-    "cast": {
-      "description": "# terralib.cast(terratype,obj)\n\nWrapper around ffi.cast. Converts obj to terratype using the rules for converting between Terra values and Lua values."
-      "signature": "terralib.cast (terratype,obj)"
-    },
-    "isconstant": {
-      "description": "# terralib.isconstant(obj)\n\nTrue if obj is a Terra constant."
-      "signature": "terralib.isconstant (obj)"
-    },
-    "ismacro": {
-      "description": "# terralib.ismacro(t)\n\nTrue if t is a macro."
-      "signature": "terralib.ismacro (t)"
-    },
+    'sizeof': { signature: 'terralib.sizeof (terratype)', description: '# terralib.sizeof (terratype)\n\nWrapper around ffi.sizeof. Completes the terratype and returns its size\nin bytes.' },
+    'offsetof': { signature: 'terralib.offsetof (terratype,field)', description: '# terralib.offsetof (terratype,field)\n\nWrapper around ffi.offsetof. Completes the terratype and returns the offset\nin bytes of field inside terratype.' },
+    'isquote': { signature: 'terralib.isquote (t)', description: '# terralib.isquote (t)\n\nReturn true if t is a quote.' },
+    'issymbol': { signature: 'terralib.issymbol (s)', description: '# terralib.issymbol (s)\n\nTrue if s is a symbol.' },
+    'typeof': { signature: 'terralib.typeof(obj)', description: '# terralib.typeof(obj)\n\nReturn the Terra type of obj. Object must be a\nLuaJIT ctype that was previously allocated using calls into the\nTerra API, or as the return value of a Terra\nfunction.' },
+    'cast': { signature: 'terralib.cast (terratype,obj)', description: '# terralib.cast (terratype,obj)\n\nWrapper around ffi.cast. Converts obj to terratype using the rules\nfor converting between Terra values and Lua values.' },
+    "isconstant": { signature: "terralib.isconstant (obj)", description: "# terralib.isconstant (obj)\n\nTrue if obj is a Terra constant." },
+    "ismacro": { signature: "terralib.ismacro (t)", description: "# terralib.ismacro(t)\n\nTrue if t is a macro." },
+    'new': { signature: 'terralib.new (terratype,[init])', description: '# terralib.new (terratype,[init])\n\nWrapper around LuaJIT’s ffi.new. Allocates a new object with the\ntype terratype. init is an optional initializer that follows the\nrules for converting between Terra values and Lua values. This\nobject will be garbage collected if it is no longer\nreachable from Lua.' },
   },
-  "symbol": {
-    "description": "# symbol(typ,[displayname])\n\nConstruct a new symbol. This symbol will be unique from any other symbol. typ is the type for the symbol. displayname is an optional name that will be printed out in error messages when this symbol is encountered."
-    "signature": "symbol (typ,[displayname])"
-  },
-  "global": {
-    "description": "# global(type,[init,name,isextern])\n#global(init,[name,isextern])\n\nCreates a new global variable of type type given the initial value init. Either type or init must be specified. If type is not specified we attempt to infer it from init. If init is not specified the global is left uninitialized. init is converted to a Terra value using the normal conversion rules. If init is specified, this completes the type.\n\ninit can also be a Quote, which will be treated as a constant expression used to initialized the global. name is used as the debugging name for the global. If isextern is true, then this global is bound to an externally defined variable with the name  name."
-    "signature": "global (type,[init,name,isextern])"
-  },
-  "constant": {
-    "description": "# constant([type],init)\n\nCreate a new constant. init is converted to a Terra value using the normal conversion rules. If the optional type is specified, then init is converted to that type explicitly. Completes the type."
-    "signature": "constant ([type],init)"
-  },
-  'macro': { signature: 'macro(function(arg0,arg1,...,argN) [...] end)', description: '# macro(function(arg0,arg1,...,argN) [...] end)\n\nCreate a new macro. The function will be invoked at\ncompile time for each call in Terra code. Each argument\nwill be a Terra quote representing the argument. For instance,\nthe call mymacro(a,b,foo())), will result in three quotes as arguments\nto the macro. The macro must return a single value\nthat will be converted to a Terra object using the\n' },
+  'symbol': { signature: 'symbol (typ,[displayname])', description: '# symbol (typ,[displayname])\n\nConstruct a new symbol. This symbol will be unique from\nany other symbol. typ is the type for the symbol.\ndisplayname is an optional name that will be printed out\n' },
+  'global': { signature: 'global(type,[init,name,isextern]) | global(init,[name,isextern])', description: '# global(type,[init,name,isextern]) | global(init,[name,isextern])\n\nCreates a new global variable of type type given the\ninitial value init. Either type or init must be specified.\nIf type is not specified we attempt to infer it\nfrom init. If init is not specified the global is\nleft uninitialized. init is converted to a Terra value using\nthe normal conversion rules. If init is specified, this completes\nthe type.' },
+  'constant': { signature: 'constant ([type],init)', description: '# constant ([type],init)\n\nCreate a new constant. init is converted to a Terra\nvalue using the normal conversion rules. If the optional type\nis specified, then init is converted to that type explicitly.\nCompletes the type.' },
+  'macro': { signature: 'macro (function(arg0,arg1,...,argN) [...] end)', description: '# macro (function(arg0,arg1,...,argN) [...] end)\n\nCreate a new macro. The function will be invoked at\ncompile time for each call in Terra code. Each argument\nwill be a Terra quote representing the argument. For instance,\nthe call mymacro(a,b,foo())), will result in three quotes as arguments\nto the macro. The macro must return a single value\nthat will be converted to a Terra object using the\ncompilation-time conversion rules.' },
 }
