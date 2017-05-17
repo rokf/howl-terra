@@ -11,4 +11,5 @@ git clone https://github.com/rokf/howl-terra
 ### Includes
 - Syntax highlighting for `Terra-Lua` code
 - `Lua` API for completion and documentation
-- `Terra` API for completion and documentation **WIP**
+- `Terra` API for completion and documentation
+- `terra-run` command which runs the active `Terra-Lua` file
