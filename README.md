@@ -8,6 +8,8 @@ cd ~/.howl/bundles
 git clone https://github.com/rokf/howl-terra
 ```
 
+If your `terra` executable isn't in your path or is saved under a different name you'll have to set the `terra_executable` configuration variable.
+
 ### Includes
 - Syntax highlighting for `Terra-Lua` code
 - `Lua` API for completion and documentation
